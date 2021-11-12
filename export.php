@@ -9,14 +9,16 @@
  * method and various methods which operate on the resulting Collection object. 
  * https://laravel.com/docs/5.8/collections
  */
+require_once('vendor/autoload.php');
 
- use Illuminate\Support;
+use Symfony\Component\Dotenv\Dotenv;
+
+$dotenv = new Dotenv();
+$dotenv->load(__DIR__.'/.env');
+
+use Classes\Controller;
 
 // prepare the request & process the arguments
-$database = 'nba2019';
-include('include/utils.php');
-require_once('vendor/autoload.php');
-require_once('classes/Controller.php');
 
 // process the args
 $args = collect($_REQUEST);

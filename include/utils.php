@@ -1,30 +1,6 @@
 <?php
-
-require_once('vendor/autoload.php');
 use Illuminate\Support;
-
-// global connection object
-global $mysqli_db;
-$mysqli_db = new mysqli('localhost', 'root', '', $database ?: 'employees');
-
-/**
- * Execute a query & return the resulting data as an array of assoc arrays
- * @param string $sql query to execute
- * @return boolean|array array of associative arrays - query results for select
- *     otherwise true or false for insert/update/delete success
- */
-function query($sql) {
-    global $mysqli_db;
-    $result = $mysqli_db->query($sql);
-    if (!is_object($result)) {
-        return $result;
-    }
-    $data = [];
-    while ($row = $result->fetch_assoc()) {
-        $data[] = $row;
-    }
-    return $data;
-}
+use Services\Template\BladeService;
 
 /**
  * Debug method - dumps a print_r of any passed variables and exits
@@ -66,14 +42,9 @@ function pass($message) {
  * @return string HTML table
  */
 function asTable($data) {
-    if (!$data || !is_array($data) || !count($data)) {
-        return 'Sorry, no matching data was found';
-    }
+    $blade = BladeService::getService();
     $data = collect($data);
-    $styles = '<style type="text/css">body{font:16px Roboto,Arial,Helvetica,Sans-serif}td,th{padding:4px 8px}th{background:#eee;font-weight:500}tr:nth-child(odd){background:#f4f4f4}</style>';
 
-    // extract headings
-    // replace underscores with space & ucfirst each word for a decent heading
     $headings = collect($data->get(0))->keys();
     $headings = $headings->map(function($item, $key) {
         return collect(explode('_', $item))
@@ -82,18 +53,9 @@ function asTable($data) {
             })
             ->join(' ');
     });
-    $headings = '<tr><th>' . $headings->join('</th><th>') . '</th></tr>';
 
-    // output data
-    $rows = [];
-    foreach ($data as $dataRow) {
-        $row = '<tr>';
-        foreach ($dataRow as $key => $value) {
-            $row .= '<td>' . $value . '</td>';
-        }
-        $row .= '</tr>';
-        $rows[] = $row;
-    }
-    $rows = implode('', $rows);
-    return $styles . '<table>' . $headings . $rows . '</table>';
+    return $blade->render('table', [
+        "headings" => $headings,
+        "data" => $data,
+    ]);
 }

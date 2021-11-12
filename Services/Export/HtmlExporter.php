@@ -16,7 +16,7 @@ class HtmlExporter implements Export {
                 ->join(' ');
         });
 
-        return $blade->render('export_html', [
+        return $blade->render('export', [
             "headings" => $headings,
             "data" => $data,
         ]);

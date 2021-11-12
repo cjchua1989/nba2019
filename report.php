@@ -5,9 +5,11 @@
  * An example is provided below. You can use the `asTable` method to pass your query result to,
  * to output it as a styled HTML table.
  */
-
-$database = 'nba2019';
 require_once('vendor/autoload.php');
+
+$dotenv = new \Symfony\Component\Dotenv\Dotenv();
+$dotenv->load(__DIR__.'/../.env');
+
 require_once('include/utils.php');
 
 /*
@@ -16,10 +18,9 @@ require_once('include/utils.php');
  * Retrieve all team codes & names
  */
 echo '<h1>Example Query</h1>';
-$teamSql = "SELECT * FROM team";
-$teamResult = query($teamSql);
+$teamRepository = new \Repositories\TeamRepository();
 // dd($teamResult);
-echo asTable($teamResult);
+echo asTable($teamRepository->getTeams());
 
 /*
  * Report 1

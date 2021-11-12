@@ -1,36 +1,34 @@
 <?php
-use Illuminate\Support;  // https://laravel.com/docs/5.8/collections - provides the collect methods & collections class
-use LSS\Array2Xml;
-require_once('classes/Exporter.php');
+namespace Classes;
+
+use Repositories\PlayerRepository;
+use Repositories\PlayerStatRepository;
+use Services\Export\ExportFactory;
 
 class Controller {
+    private $playerRepository;
+    private $playerStatRepository;
 
     public function __construct($args) {
         $this->args = $args;
+        $this->playerRepository = new PlayerRepository();
+        $this->playerStatRepository = new PlayerStatRepository();
     }
 
-    public function export($type, $format) {
+    public function export($type, $format): string {
+        $exporter = ExportFactory::getService($format);
         $data = [];
-        $exporter = new Exporter();
         switch ($type) {
             case 'playerstats':
-                $searchArgs = ['player', 'playerId', 'team', 'position', 'country'];
-                $search = $this->args->filter(function($value, $key) use ($searchArgs) {
-                    return in_array($key, $searchArgs);
-                });
-                $data = $exporter->getPlayerStats($search);
+                $data = $this->playerStatRepository->parseSearch($this->args)->getPlayerStats();
                 break;
             case 'players':
-                $searchArgs = ['player', 'playerId', 'team', 'position', 'country'];
-                $search = $this->args->filter(function($value, $key) use ($searchArgs) {
-                    return in_array($key, $searchArgs);
-                });
-                $data = $exporter->getPlayers($search);
+                $data = $this->playerRepository->parseSearch($this->args)->getPlayers();
                 break;
         }
         if (!$data) {
             exit("Error: No data found!");
         }
-        return $exporter->format($data, $format);
+        return $exporter->render($data);
     }
 }
