@@ -1,0 +1,23 @@
+version: '3.3'
+services:
+  webservice:
+    image: php:7-apache
+    restart: always
+    ports:
+      - '80:80'
+    expose:
+      - '80'
+    volumes:
+      - ./:/var/www/html/
+  database:
+    image: mysql:5.7.23
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: database
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    volumes:
+      - ./environment/mysql:/var/lib/mysql
