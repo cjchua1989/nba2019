@@ -1,6 +1,10 @@
 version: '3.3'
 services:
   webservice:
+    build: {
+      context: .,
+      dockerfile: extensions
+    }
     image: php:7-apache
     restart: always
     ports:

@@ -7,7 +7,7 @@ class Database {
 
     private function __construct()
     {
-        $this->connection = new mysqli(
+        $this->connection = new \mysqli(
             env('DB_HOST', 'localhost'),
             env('DB_USERNAME', 'root'),
             env('DB_PASSWORD', 'password'),
